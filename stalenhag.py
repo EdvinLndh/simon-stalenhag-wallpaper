@@ -2,10 +2,12 @@
 
 import re, os, sys, random, json, argparse
 from enum import Enum
+from time import sleep
 from urllib import request
+import requests
 from pathlib import Path
 
-BASE = 'http://www.simonstalenhag.se/'
+BASE = 'https://www.simonstalenhag.se/'
 
 class Pages(Enum):
     ALL = ''
@@ -93,7 +95,22 @@ def get_images_list(prints=False):
 
 def download_image(image):
     url = f'{BASE}{image}'
-    request.urlretrieve(url, IMAGES_DIR + image.replace('/', '-'))
+    r = requests.get(url)
+    if r.status_code == 200:
+        with open(IMAGES_DIR + image.replace('/', '-'), 'wb') as f:
+            for chunk in r:
+                f.write(chunk)
+        try:
+            rtry = r.headers['Retry-After']
+            if rtry:
+                sleep(int(rtry))
+        except (TypeError, ValueError):
+            print('Error converting retry value to int')
+            sleep(0.5)
+            return
+        except:
+            # No Retry-After header
+            return
 
 def get_random_local_image(favorites=False):
     images = []
