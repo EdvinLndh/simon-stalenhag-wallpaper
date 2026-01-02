@@ -10,6 +10,7 @@ BASE = 'http://www.simonstalenhag.se/'
 class Pages(Enum):
     ALL = ''
     STEEL_MEADOW = BASE
+    SWEDISH_MACHINES = f'{BASE}svema.html'
     PALEOART = f'{BASE}paleo.html'
     COMMISIONS = f'{BASE}other.html'
     TALES_FROM_THE_LOOP = f'{BASE}tftl.html'
@@ -19,6 +20,7 @@ class Pages(Enum):
 
 class Collections(Enum):
     ALL = 'ALL'
+    SWEDISH_MACHINES = 'SWEDISH_MACHINES'
     STEEL = 'STEEL_MEADOW'
     PALEO = 'PALEOART'
     OTHERS = 'COMMISIONS'
@@ -83,7 +85,7 @@ def get_images_list(prints=False):
     images = []
     for url in urls:
         contents = request.urlopen(url).read()
-        search = r'(?:bilder|paleo|other|tftl|tftf)big\/[a-zA-Z0-9_]*\.jpg'
+        search = r'(?:4k)?/(?:bilder|svema|other|tftl|tftf)_?\d*_?big\.jpg|(?:/4k/)?(?:bilder|svema|other|tftl|tftf)big/\d+\.jpg|(?:bilder|paleo|other|tftl|tftf)big\/[a-zA-Z0-9_]*\.jpg'
         collectionImages = re.findall(search, str(contents))
         images.extend(collectionImages)
 
