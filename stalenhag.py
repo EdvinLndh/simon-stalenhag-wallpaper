@@ -96,21 +96,21 @@ def get_images_list(prints=False):
 def download_image(image):
     url = f'{BASE}{image}'
     r = requests.get(url)
-    if r.status_code == 200:
-        with open(IMAGES_DIR + image.replace('/', '-'), 'wb') as f:
-            for chunk in r:
-                f.write(chunk)
+    if r.status_code == 429:
         try:
             rtry = r.headers['Retry-After']
             if rtry:
                 sleep(int(rtry))
+                r = requests.get(url)
         except (TypeError, ValueError):
             print('Error converting retry value to int')
             sleep(0.5)
+            r = requests.get(url)
             return
-        except:
-            # No Retry-After header
-            return
+
+    with open(IMAGES_DIR + image.replace('/', '-'), 'wb') as f:
+        for chunk in r:
+            f.write(chunk)
 
 def get_random_local_image(favorites=False):
     images = []
